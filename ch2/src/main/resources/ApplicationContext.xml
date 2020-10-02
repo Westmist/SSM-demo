@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bean="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+    <!--Spring扫描包中的Bean-->
+    <bean:component-scan base-package="com.lcc"/>
+    <!--切面类包含各类通知-->
+    <bean id="myAspect" class="com.lcc.MyAspect"/>
+    <!-- AOP配置 -->
+    <aop:config>
+        <aop:aspect ref="myAspect">
+            <!--配置切入点，通知增强那些方法
+            第一个* 指返回类型，第二个表示匹配所有方法，(..)表示方法参数-->
+            <aop:pointcut id="pointcut" expression="execution(* com.lcc.People.*(..))"/>
+            <aop:before method="beforeMethod" pointcut-ref="pointcut"/>
+            <aop:after-throwing method="exceptionMethod" pointcut-ref="pointcut" throwing="e"/>
+            <aop:after-returning method="returnMethod" pointcut-ref="pointcut"/>
+            <aop:after method="afterMethod" pointcut-ref="pointcut"/>
+        </aop:aspect>
+    </aop:config>
+    <!-- 启用基于注解的AspectJ支持 -->
+    <aop:aspectj-autoproxy/>
+
+    <!--    指定需要扫描的包，使注解生效-->
+    <bean:component-scan base-package="com.lcc.annotation"/>
+</beans>
