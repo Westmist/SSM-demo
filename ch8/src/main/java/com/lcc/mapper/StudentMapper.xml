@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- Mybatis映射文件 -->
+<mapper namespace="com.lcc.dao.StudentDao">
+    <select id="queryByIf" resultType="com.lcc.pojo.Student" parameterType="com.lcc.pojo.Student">
+        SELECT * FROM student_tbl WHERE 1=1
+        <if test="student_name != null and student_name !=''">
+            AND student_name LIKE '%明%'
+        </if>
+        <if test="student_age != null">
+            AND student_age = #{student_age}
+        </if>
+    </select>
+    <select id="queryByWhen" resultType="com.lcc.pojo.Student" parameterType="com.lcc.pojo.Student">
+        SELECT * FROM student_tbl WHERE 1=1
+        <choose>
+            <when test="student_name != null and student_name !=''">
+                AND student_name LIKE '%小%'
+            </when>
+            <when test="student_age != null and student_age > 18">
+                AND student_age = #{student_age}
+            </when>
+            <otherwise>
+                AND student_id > 0
+            </otherwise>
+        </choose>
+    </select>
+    <select id="queryByWhere" parameterType="com.lcc.pojo.Student" resultType="com.lcc.pojo.Student">
+        SELECT * FROM student_tbl
+        <where>
+            <if test="student_name != null and student_name != ''">
+                AND student_name LIKE '%明%'
+            </if>
+            <if test="student_age != null and student_age >= 18">
+                AND student_age = #{student_age}
+            </if>
+        </where>
+    </select>
+    <select id="queryByBind" parameterType="com.lcc.pojo.Student" resultType="com.lcc.pojo.Student">
+        <!-- value中的student_name是POJO中的属性名 -->
+        <bind name="paran_name" value="'%'+ student_name +'%'"/>
+        SELECT * FROM student_tbl WHERE student_name LIKE #{paran_name}
+    </select>
+
+    <!-- item代表集合元素的别名，index为索引，separator代表分隔符 -->
+    <select id="queryByFore" parameterType="List" resultType="com.lcc.pojo.Student">
+        SELECT * FROM student_tbl WHERE student_age in
+        <foreach collection="list" item="item" index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+</mapper>
